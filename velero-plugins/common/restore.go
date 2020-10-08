@@ -58,6 +58,11 @@ func (p *RestorePlugin) Execute(input *velero.RestoreItemActionExecuteInput) (*v
 	}
 	metadata.SetAnnotations(annotations)
 
+	p.Log.Info("############################## 1 metadata ###############################")
+	p.Log.Info(metadata)
+	p.Log.Info("############################### 2 input restore items ##############################")
+	p.Log.Info(input.Restore.Labels)
+
 	// Set migmigraiton label on all resources, except ServiceAccounts
 	switch input.Item.DeepCopyObject().(type) {
 	case *corev1.ServiceAccount:
@@ -77,8 +82,11 @@ func (p *RestorePlugin) Execute(input *velero.RestoreItemActionExecuteInput) (*v
 		}
 		labels[MigratedByLabel] = migMigrationLabel
 		labels[MigPlanLabelKey] = migPlanLabel
+		labels["MTEST"] = "foo"
 		metadata.SetLabels(labels)
 	}
+
+	p.Log.Info("############################## end ###############################")
 
 	return velero.NewRestoreItemActionExecuteOutput(input.Item), nil
 }
